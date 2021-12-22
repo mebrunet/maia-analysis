@@ -229,31 +229,39 @@ print('treated:', (df.frac_treated > 0).sum())
 print('untreated:', (df.frac_treated == 0).sum())
 
 # %% Plot the treatment effect
-games_mask = True  # (df.games_played > 0) & (df.games_played < 50)
-mean_games_treated = df[games_mask & (df.frac_treated > 0)].games_played.mean()
+games_mask = True  # (df.games_played > 0) & (df.games_played < 100)
+mean_games_treated = df[df.frac_treated > 0].games_played.mean()
 print('mean treated:', mean_games_treated)
-mean_games_untreated = df[games_mask & (df.frac_treated == 0)].games_played.mean()
+mean_games_untreated = df[df.frac_treated == 0].games_played.mean()
 print('mean untreated:', mean_games_untreated)
 plt.hist(df[games_mask & (df.frac_treated > 0)].games_played,
-         alpha=0.7, label=f'treated (mean={mean_games_treated:.3f})', bins=50, density=True)
+         alpha=1, label=f'treated (mean={mean_games_treated:.3f})',
+         bins=100, density=True, histtype='step', cumulative=True)
 plt.hist(df[games_mask & (df.frac_treated == 0)].games_played,
-         alpha=0.7, label=f'untreated (mean={mean_games_untreated:.3f})', bins=50, density=True)
+         alpha=1, label=f'untreated (mean={mean_games_untreated:.3f})',
+         bins=100, density=True, histtype='step', cumulative=True)
 plt.xlabel('games played per user-day', fontsize=14)
-plt.legend(fontsize=12)
+plt.ylabel('fraction of user-days', fontsize=14)
+plt.xlim(0, 50)
+plt.legend(fontsize=12, loc='lower right')
 plt.show()
 
 # %%
 time_mask = True  # df.time_played < pd.Timedelta(8, 'h')
-mean_time_treated = df[time_mask & (df.frac_treated > 0)].time_played.mean().total_seconds() / 60
+mean_time_treated = df[df.frac_treated > 0].time_played.mean().total_seconds() / 60
 print('mean treated:', mean_time_treated)
-mean_time_untreated = df[time_mask & (df.frac_treated == 0)].time_played.mean().total_seconds() / 60
+mean_time_untreated = df[df.frac_treated == 0].time_played.mean().total_seconds() / 60
 print('mean untreated:', mean_time_untreated)
 plt.hist(df[time_mask & (df.frac_treated > 0)].time_played.view(dtype=int) / 1e9,
-         alpha=0.7, label=f'treated (mean={mean_time_treated:.2f} min)', bins=50, density=True)
+         alpha=1, label=f'treated (mean={mean_time_treated:.2f} min)',
+         bins=100, density=True, histtype='step', cumulative=True)
 plt.hist(df[time_mask & (df.frac_treated == 0)].time_played.view(dtype=int) / 1e9,
-         alpha=0.7, label=f'untreated (mean={mean_time_untreated:.2f} min)', bins=50, density=True)
+         alpha=1, label=f'untreated (mean={mean_time_untreated:.2f} min)',
+         bins=100, density=True, histtype='step', cumulative=True)
 plt.xlabel('time played per user-day (seconds)', fontsize=14)
-plt.legend(fontsize=12)
+plt.ylabel('fraction of user-days', fontsize=14)
+plt.xlim(0, 15_000)
+plt.legend(fontsize=12, loc='lower right')
 plt.show()
 
 # %% Run a U-test to check the difference in these distributions
